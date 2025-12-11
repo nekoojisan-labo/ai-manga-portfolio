@@ -1,135 +1,209 @@
-'use strict';
-
 /* ═══════════════════════════════════════════════════════
-   XSS Escape Function
+   茶々丸。ポートフォリオ - JavaScript
    ═══════════════════════════════════════════════════════ */
-function escapeHTML(str) {
-    if (typeof str !== 'string') return '';
-    const div = document.createElement('div');
-    div.textContent = str;
-    return div.innerHTML;
+
+document.addEventListener('DOMContentLoaded', () => {
+    initCookieBanner();
+    initNavigation();
+    initSmoothScroll();
+    initFormValidation();
+    initScrollAnimations();
+});
+
+/* Cookie Banner */
+function initCookieBanner() {
+    const banner = document.getElementById('cookie-banner');
+    const acceptBtn = document.getElementById('cookie-accept');
+    
+    if (!banner || !acceptBtn) return;
+    
+    // Check if already accepted
+    if (localStorage.getItem('cookieAccepted')) {
+        banner.classList.add('hidden');
+        return;
+    }
+    
+    acceptBtn.addEventListener('click', () => {
+        localStorage.setItem('cookieAccepted', 'true');
+        banner.classList.add('hidden');
+    });
 }
 
-/* ═══════════════════════════════════════════════════════
-   Form Validators
-   ═══════════════════════════════════════════════════════ */
-const validators = {
-    required: (value) => value.trim() !== '' || 'この項目は必須です',
-    email: (value) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value) || '正しいメールアドレスを入力してください',
-    noScript: (value) => !/<script|javascript:|on\w+=/i.test(value) || '不正な文字が含まれています'
-};
-
-/* ═══════════════════════════════════════════════════════
-   DOM Content Loaded
-   ═══════════════════════════════════════════════════════ */
-document.addEventListener('DOMContentLoaded', function () {
-
-    /* Cookie Banner */
-    const cookieBanner = document.getElementById('cookie-banner');
-    const cookieAccept = document.getElementById('cookie-accept');
-    if (cookieBanner && cookieAccept) {
-        if (localStorage.getItem('cookieConsent') === 'accepted') {
-            cookieBanner.classList.add('hidden');
-        }
-        cookieAccept.addEventListener('click', () => {
-            localStorage.setItem('cookieConsent', 'accepted');
-            cookieBanner.classList.add('hidden');
-        });
-    }
-
-    /* Header Scroll Effect */
-    const header = document.getElementById('header');
-    if (header) {
+/* Navigation */
+function initNavigation() {
+    const nav = document.querySelector('.nav-main');
+    const toggle = document.querySelector('.nav-toggle');
+    const links = document.querySelector('.nav-links');
+    
+    // Scroll effect
+    if (nav) {
         window.addEventListener('scroll', () => {
-            header.classList.toggle('header--scrolled', window.scrollY > 50);
-        });
-    }
-
-    /* Mobile Menu */
-    const menuBtn = document.getElementById('menu-btn');
-    const navList = document.getElementById('nav-list');
-    if (menuBtn && navList) {
-        menuBtn.addEventListener('click', () => {
-            const isExpanded = menuBtn.getAttribute('aria-expanded') === 'true';
-            menuBtn.setAttribute('aria-expanded', !isExpanded);
-            navList.classList.toggle('active');
-        });
-        navList.querySelectorAll('a').forEach(link => {
-            link.addEventListener('click', () => {
-                menuBtn.setAttribute('aria-expanded', 'false');
-                navList.classList.remove('active');
-            });
-        });
-    }
-
-    /* Scroll Animation */
-    const observer = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                entry.target.classList.add('animate-in');
-                observer.unobserve(entry.target);
-            }
-        });
-    }, { threshold: 0.1 });
-    document.querySelectorAll('.animate-on-scroll').forEach(el => observer.observe(el));
-
-    /* Form Validation */
-    const form = document.getElementById('contactForm');
-    if (form) {
-        function validateField(field) {
-            const value = field.value.trim();
-            const errorEl = document.getElementById(field.id + '-error');
-            let isValid = true;
-            let message = '';
-
-            if (field.required && !value) {
-                isValid = false;
-                message = 'この項目は必須です';
-            } else if (field.type === 'email' && value) {
-                const result = validators.email(value);
-                if (result !== true) { isValid = false; message = result; }
-            } else if (value) {
-                const result = validators.noScript(value);
-                if (result !== true) { isValid = false; message = result; }
-            }
-
-            if (errorEl) errorEl.textContent = message;
-            field.classList.toggle('form__input--error', !isValid);
-            field.setAttribute('aria-invalid', !isValid);
-            return isValid;
-        }
-
-        form.querySelectorAll('input, textarea').forEach(field => {
-            field.addEventListener('blur', () => validateField(field));
-        });
-
-        form.addEventListener('submit', function (e) {
-            e.preventDefault();
-            const honeypot = form.querySelector('input[name="website"]');
-            if (honeypot && honeypot.value) { console.log('Bot detected'); return; }
-
-            let isValid = true;
-            form.querySelectorAll('input[required], textarea[required]').forEach(field => {
-                if (!validateField(field)) isValid = false;
-            });
-
-            if (isValid) {
-                alert('送信が完了しました！（デモ）');
-                form.reset();
+            if (window.scrollY > 50) {
+                nav.classList.add('scrolled');
+            } else {
+                nav.classList.remove('scrolled');
             }
         });
     }
+    
+    // Mobile toggle
+    if (toggle && links) {
+        toggle.addEventListener('click', () => {
+            links.classList.toggle('active');
+            toggle.classList.toggle('active');
+        });
+    }
+}
 
-    /* Smooth Scroll for Anchor Links */
+/* Smooth Scroll */
+function initSmoothScroll() {
     document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-        anchor.addEventListener('click', function (e) {
-            const targetId = this.getAttribute('href');
-            if (targetId === '#') return;
-            const target = document.querySelector(targetId);
-            if (target) {
-                e.preventDefault();
-                target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        anchor.addEventListener('click', function(e) {
+            const href = this.getAttribute('href');
+            if (href === '#') return;
+            
+            const target = document.querySelector(href);
+            if (!target) return;
+            
+            e.preventDefault();
+            
+            const navHeight = document.querySelector('.nav-main')?.offsetHeight || 0;
+            const targetPosition = target.offsetTop - navHeight - 20;
+            
+            window.scrollTo({
+                top: targetPosition,
+                behavior: 'smooth'
+            });
+            
+            // Close mobile menu if open
+            const links = document.querySelector('.nav-links');
+            const toggle = document.querySelector('.nav-toggle');
+            if (links?.classList.contains('active')) {
+                links.classList.remove('active');
+                toggle?.classList.remove('active');
             }
         });
     });
-});
+}
+
+/* Form Validation */
+function initFormValidation() {
+    const form = document.getElementById('contactForm');
+    if (!form) return;
+    
+    const validators = {
+        name: {
+            validate: (value) => value.trim().length >= 1 && value.trim().length <= 100,
+            message: 'お名前を入力してください'
+        },
+        email: {
+            validate: (value) => {
+                const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                return emailRegex.test(value) && value.length <= 254;
+            },
+            message: '有効なメールアドレスを入力してください'
+        },
+        message: {
+            validate: (value) => value.trim().length >= 1 && value.trim().length <= 5000,
+            message: 'お問い合わせ内容を入力してください'
+        }
+    };
+    
+    // Real-time validation
+    Object.keys(validators).forEach(fieldName => {
+        const field = form.querySelector(`#${fieldName}`);
+        const errorEl = document.getElementById(`${fieldName}-error`);
+        
+        if (!field || !errorEl) return;
+        
+        field.addEventListener('blur', () => {
+            validateField(field, validators[fieldName], errorEl);
+        });
+        
+        field.addEventListener('input', () => {
+            if (field.classList.contains('error')) {
+                validateField(field, validators[fieldName], errorEl);
+            }
+        });
+    });
+    
+    // Form submission
+    form.addEventListener('submit', (e) => {
+        e.preventDefault();
+        
+        // Honeypot check
+        const honeypot = form.querySelector('input[name="website"]');
+        if (honeypot && honeypot.value) {
+            console.log('Bot detected');
+            return;
+        }
+        
+        let isValid = true;
+        
+        Object.keys(validators).forEach(fieldName => {
+            const field = form.querySelector(`#${fieldName}`);
+            const errorEl = document.getElementById(`${fieldName}-error`);
+            
+            if (!validateField(field, validators[fieldName], errorEl)) {
+                isValid = false;
+            }
+        });
+        
+        if (isValid) {
+            // Show success message
+            const submitBtn = form.querySelector('button[type="submit"]');
+            const originalText = submitBtn.textContent;
+            submitBtn.textContent = '送信しました！';
+            submitBtn.disabled = true;
+            
+            setTimeout(() => {
+                form.reset();
+                submitBtn.textContent = originalText;
+                submitBtn.disabled = false;
+            }, 3000);
+        }
+    });
+}
+
+function validateField(field, validator, errorEl) {
+    if (!field || !validator || !errorEl) return true;
+    
+    const isValid = validator.validate(field.value);
+    
+    if (isValid) {
+        field.classList.remove('error');
+        errorEl.textContent = '';
+        return true;
+    } else {
+        field.classList.add('error');
+        errorEl.textContent = validator.message;
+        return false;
+    }
+}
+
+/* Scroll Animations */
+function initScrollAnimations() {
+    const observerOptions = {
+        threshold: 0.1,
+        rootMargin: '0px 0px -50px 0px'
+    };
+    
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('visible');
+            }
+        });
+    }, observerOptions);
+    
+    // Add animation class to elements
+    const animatedElements = document.querySelectorAll(
+        '.section-header, .about-grid, .problem-card, .testimonial-card, ' +
+        '.work-card, .process-step, .service-card, .contact-wrapper'
+    );
+    
+    animatedElements.forEach(el => {
+        el.classList.add('animate-on-scroll');
+        observer.observe(el);
+    });
+}
