@@ -8,7 +8,7 @@
     --color-secondary: #ff00aa;
     --color-accent: #ffff00;
     --color-text: #ffffff;
-    --color-text-dim: #666680;
+    --color-text-dim: #b0b0d0;
     --font-main: 'Zen Kaku Gothic New', sans-serif;
     --font-cyber: 'Orbitron', sans-serif;
     --glow-primary: 0 0 20px rgba(0, 240, 255, 0.5);
@@ -59,12 +59,28 @@ a {
     top: 0;
 }
 
+
 @media (prefers-reduced-motion: reduce) {
 
     *,
     *::before,
     *::after {
         animation-duration: 0.01ms !important;
+    }
+}
+
+/* Mobile Line Break Control */
+@media (max-width: 768px) {
+    br {
+        display: none;
+    }
+
+    br.force-break {
+        display: block;
+    }
+
+    .hero-manga__title br {
+        display: block;
     }
 }
 
