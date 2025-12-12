@@ -494,6 +494,85 @@ a {
 }
 
 /* ═══════════════════════════════════════════════════════
+   Writing Section - 描いた作品ギャラリー
+   ═══════════════════════════════════════════════════════ */
+.section-writing {
+    padding: 6rem 2rem;
+    background: var(--color-bg);
+}
+
+.writing-gallery {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.5rem;
+}
+
+.writing-item {
+    background: var(--color-bg-alt);
+    border: 3px solid var(--color-border);
+    overflow: hidden;
+    position: relative;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: var(--shadow-soft);
+}
+
+.writing-item:hover {
+    border-color: var(--color-primary);
+    transform: translateY(-5px);
+    box-shadow: var(--shadow-hover);
+    z-index: 10;
+}
+
+.writing-item--large {
+    grid-column: span 1;
+}
+
+.writing-item img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    transition: transform 0.3s ease;
+}
+
+.writing-item:hover img {
+    transform: scale(1.02);
+}
+
+/* Lightbox overlay effect */
+.writing-item::after {
+    content: '🔍';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 2rem;
+    opacity: 0;
+    transition: opacity 0.3s;
+    background: rgba(255, 255, 255, 0.9);
+    padding: 1rem;
+    border-radius: 50%;
+}
+
+.writing-item:hover::after {
+    opacity: 0.9;
+}
+
+@media (max-width: 768px) {
+    .writing-gallery {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+
+    .writing-item--large {
+        grid-column: span 1;
+    }
+}
+
+/* ═══════════════════════════════════════════════════════
    About Section - 人柄が伝わるデザイン
    ═══════════════════════════════════════════════════════ */
 .section-about {
