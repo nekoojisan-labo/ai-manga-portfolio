@@ -6,7 +6,6 @@ document.addEventListener('DOMContentLoaded', () => {
     initCookieBanner();
     initNavigation();
     initSmoothScroll();
-    initFormValidation();
     initScrollAnimations();
 });
 
@@ -84,101 +83,6 @@ function initSmoothScroll() {
             }
         });
     });
-}
-
-/* Form Validation */
-function initFormValidation() {
-    const form = document.getElementById('contactForm');
-    if (!form) return;
-    
-    const validators = {
-        name: {
-            validate: (value) => value.trim().length >= 1 && value.trim().length <= 100,
-            message: 'お名前を入力してください'
-        },
-        email: {
-            validate: (value) => {
-                const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-                return emailRegex.test(value) && value.length <= 254;
-            },
-            message: '有効なメールアドレスを入力してください'
-        },
-        message: {
-            validate: (value) => value.trim().length >= 1 && value.trim().length <= 5000,
-            message: 'お問い合わせ内容を入力してください'
-        }
-    };
-    
-    // Real-time validation
-    Object.keys(validators).forEach(fieldName => {
-        const field = form.querySelector(`#${fieldName}`);
-        const errorEl = document.getElementById(`${fieldName}-error`);
-        
-        if (!field || !errorEl) return;
-        
-        field.addEventListener('blur', () => {
-            validateField(field, validators[fieldName], errorEl);
-        });
-        
-        field.addEventListener('input', () => {
-            if (field.classList.contains('error')) {
-                validateField(field, validators[fieldName], errorEl);
-            }
-        });
-    });
-    
-    // Form submission
-    form.addEventListener('submit', (e) => {
-        e.preventDefault();
-        
-        // Honeypot check
-        const honeypot = form.querySelector('input[name="website"]');
-        if (honeypot && honeypot.value) {
-            console.log('Bot detected');
-            return;
-        }
-        
-        let isValid = true;
-        
-        Object.keys(validators).forEach(fieldName => {
-            const field = form.querySelector(`#${fieldName}`);
-            const errorEl = document.getElementById(`${fieldName}-error`);
-            
-            if (!validateField(field, validators[fieldName], errorEl)) {
-                isValid = false;
-            }
-        });
-        
-        if (isValid) {
-            // Show success message
-            const submitBtn = form.querySelector('button[type="submit"]');
-            const originalText = submitBtn.textContent;
-            submitBtn.textContent = '送信しました！';
-            submitBtn.disabled = true;
-            
-            setTimeout(() => {
-                form.reset();
-                submitBtn.textContent = originalText;
-                submitBtn.disabled = false;
-            }, 3000);
-        }
-    });
-}
-
-function validateField(field, validator, errorEl) {
-    if (!field || !validator || !errorEl) return true;
-    
-    const isValid = validator.validate(field.value);
-    
-    if (isValid) {
-        field.classList.remove('error');
-        errorEl.textContent = '';
-        return true;
-    } else {
-        field.classList.add('error');
-        errorEl.textContent = validator.message;
-        return false;
-    }
 }
 
 /* Scroll Animations */
